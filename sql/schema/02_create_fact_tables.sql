@@ -68,5 +68,5 @@ CREATE TABLE IF NOT EXISTS fact_game_metrics (
         REFERENCES dim_games(game_id),
 
     CONSTRAINT uq_game_snapshot
-    UNIQUE (game_id, snapshot_date);
+    UNIQUE (game_id, snapshot_date)
 );

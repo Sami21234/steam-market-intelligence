@@ -1,0 +1,7 @@
+SELECT DATABASE();
+
+SHOW TABLES;
+
+SHOW CREATE TABLE dim_games;
+
+SHOW INDEX FROM dim_games;
