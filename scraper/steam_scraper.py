@@ -18,5 +18,19 @@ class SteamScraper:
 
         print(f"Found {len(games)} games on page")
 
-        first_game = games[0]       # Takes first game
-        print(first_game.prettify())    # Prints HTML
+        parsed_games = []    # List of games
+
+        for game in games:
+            parsed_game = parser.parse_game(game)
+
+            # validation for missing values.
+            if parsed_game["steam_app_id"] is None:
+                continue
+
+            parsed_games.append(parsed_game)
+
+        print(f"Successfully parsed {len(parsed_games)} games")
+        # print(parsed_games[0])
+
+        for game in parsed_games[:10]:
+            print(game)
