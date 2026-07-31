@@ -3,6 +3,7 @@
 from scraper.client import SteamClient
 from scraper.constants import STEAM_SEARCH_URL
 from scraper.parser import SteamParser
+from transform.transformer import SteamTransformer
 
 class SteamScraper:
 
@@ -23,11 +24,15 @@ class SteamScraper:
         for game in games:
             parsed_game = parser.parse_game(game)
 
+            print(parsed_game)
+
             # validation for missing values.
             if parsed_game["steam_app_id"] is None:
                 continue
 
-            parsed_games.append(parsed_game)
+            transformed_games = SteamTransformer.transform(parsed_game)
+
+            parsed_games.append(transformed_games)
 
         print(f"Successfully parsed {len(parsed_games)} games")
         # print(parsed_games[0])

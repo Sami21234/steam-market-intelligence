@@ -27,8 +27,9 @@ class SteamParser:
 
         release_date = game.select_one("div.search_released")   # Gives the released date of the game.
 
-        price = game.select_one("div.discount_final_price")     # Gives the price of the game.
-
+        price = ( game.select_one("div.discount_final_price")     # Gives the price of the game.
+                  or game.select_one("div.discount_original_price")
+        )
         review = game.select_one("span.search_review_summary")  # Gives the reviews of the game.
 
         platforms = game.select(".search_platforms span")       # Gives the platform such as (Linux, Windows, Mac).
