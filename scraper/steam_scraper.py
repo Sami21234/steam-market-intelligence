@@ -1,9 +1,12 @@
 # This file is responsible for connecting everything.
 
-from scraper.client import SteamClient
-from scraper.constants import STEAM_SEARCH_URL
-from scraper.parser import SteamParser
-from transform.transformer import SteamTransformer
+from database import connection
+from scraper.client import SteamClient      # Responsible for downloading the HTML structure of the Steam search page.
+from scraper.constants import STEAM_SEARCH_URL      # Constant that holds the URL of the Steam search page to be scraped.
+from scraper.parser import SteamParser      # Responsible for parsing the HTML structure and extracting relevant game information.
+from transform.transformer import SteamTransformer      # Responsible for transforming the parsed game data into a format suitable for database insertion.
+from database.connection import get_connection        # Function that establishes a connection to the database.
+from database.repository import GameRepository      # Class that handles database operations related to the Game model.
 
 class SteamScraper:
 
@@ -11,31 +14,41 @@ class SteamScraper:
         self.client = SteamClient()     # Downloads the Html Structure(DOM) and parse to BeautifulSoup
 
     def scrape_first_game(self):
+
         response = self.client.get(STEAM_SEARCH_URL)    # Find all game cards 
 
         parser = SteamParser(response.text)
 
         games = parser.get_game_cards()
 
+        connection = get_connection()       
+
+        repository = GameRepository(connection)
+
         print(f"Found {len(games)} games on page")
 
-        parsed_games = []    # List of games
+        saved = 0       
 
-        for game in games:
-            parsed_game = parser.parse_game(game)
+        try:    
 
-            print(parsed_game)
+            for game in games:
 
-            # validation for missing values.
-            if parsed_game["steam_app_id"] is None:
-                continue
+                    parsed_game = parser.parse_game(game)
 
-            transformed_games = SteamTransformer.transform(parsed_game)
+                    # print(parsed_game)
 
-            parsed_games.append(transformed_games)
+                    # validation for missing values.
+                    if parsed_game["steam_app_id"] is None:
+                        continue
 
-        print(f"Successfully parsed {len(parsed_games)} games")
-        # print(parsed_games[0])
+                    transformed_game = SteamTransformer.transform(parsed_game)
 
-        for game in parsed_games[:10]:
-            print(game)
+                    repository.save_game(transformed_game)
+                    saved += 1
+
+        finally:
+
+            connection.close()      # Close the database connection
+
+        print(f"Successfully saved {saved} games")
+
