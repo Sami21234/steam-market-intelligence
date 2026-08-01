@@ -1,5 +1,6 @@
 # This file is responsible for Cleaning the data, which is important to do, before loading it to the database(MySQL).
 
+from models.game import Game
 from datetime import datetime
 
 class SteamTransformer:
@@ -52,4 +53,13 @@ class SteamTransformer:
         else:
             transformed["release_date"] = None
 
-        return transformed
+        return Game(        # Returning the transformed data as a Game object, which is a structured representation of the game data.
+            steam_app_id = transformed["steam_app_id"],
+            game_name = transformed["game_name"],
+            release_date = transformed["release_date"],
+            price = transformed["price"],
+            review_summary = transformed["review_summary"],
+            windows = transformed["windows"],
+            mac = transformed["mac"],
+            linux = transformed["linux"],
+        )
