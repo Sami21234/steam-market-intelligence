@@ -52,3 +52,32 @@ class SteamScraper:
 
         print(f"Successfully saved {saved} games")
 
+# scrape_first_game() should now follow this order:
+
+"""
+
+            Create HTTP Client
+                    │
+              Download HTML
+                    │
+              Create Parser
+                    │
+             Find Game Cards
+                    │
+            Create MySQL Connection
+                    │
+            Create Repository
+                    │
+            Loop Through Games
+                    │
+                  Parse
+                    │
+                Validate
+                    │
+                Transform
+                    │
+               Save to Database
+                    │
+               Close Connection
+
+"""

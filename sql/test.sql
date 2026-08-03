@@ -2,6 +2,6 @@ SELECT DATABASE();
 
 SHOW TABLES;
 
-SHOW CREATE TABLE dim_games;
+DESCRIBE fact_game_metrics;
 
-SHOW INDEX FROM dim_games;
+SHOW CREATE TABLE fact_game_metrics;       

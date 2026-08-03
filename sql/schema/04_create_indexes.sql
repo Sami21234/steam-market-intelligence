@@ -9,17 +9,16 @@ ON dim_games(game_name);
 CREATE INDEX idx_games_release_date
 ON dim_games(release_date);
 
--- for fact table game_metrics creating the index
+-- fact_game_metrics
 CREATE INDEX idx_metrics_snapshot
 ON fact_game_metrics(snapshot_date);
 
--- for price creating the index
-CREATE INDEX idx_metrics_price
-ON fact_game_metrics(price);
-
-SHOW INDEX FROM dim_games;
-SHOW INDEX FROM fact_game_metrics;
+-- for snapshot_date and game_id creating the composite index
+CREATE INDEX idx_game_snapshot
+ON fact_game_metrics(game_id, snapshot_date);
 
 
--- Now, for the composite indexes
+
+
+
 
