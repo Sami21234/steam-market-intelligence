@@ -59,21 +59,21 @@ CREATE TABLE IF NOT EXISTS bridge_game_genres
 );
 
 -- bridge_game_platforms
-CREATE TABLE IF NOT EXISTS bridge_game_genres
+CREATE TABLE IF NOT EXISTS bridge_game_platforms
 (
     game_id INT NOT NULL,
 
-    genre_id INT NOT NULL,
+    platform_id INT NOT NULL,
 
-    PRIMARY KEY (game_id, genre_id),
+    PRIMARY KEY (game_id, platform_id),
 
-    CONSTRAINT fk_bridge_game_genre
+    CONSTRAINT fk_bridge_game_platform
         FOREIGN KEY (game_id)
         REFERENCES dim_games(game_id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_bridge_genre
-        FOREIGN KEY (genre_id)
-        REFERENCES dim_genres(genre_id)
+    CONSTRAINT fk_bridge_platform
+        FOREIGN KEY (platform_id)
+        REFERENCES dim_platforms(platform_id)
         ON DELETE CASCADE
 );
