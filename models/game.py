@@ -12,6 +12,7 @@ class Game:
     steam_app_id: int       # The unique identifier for the game on Steam.
     game_name: str          # The name of the game.
     release_date: Optional[date]  # The date the game was released.
+    steam_url: str           # The URL of the game's page on Steam.
     publisher: list[str]    # Publisher of the game.
     developer: list[str]    # Developer of the game.
     genres: list[str]       # List of genres.
