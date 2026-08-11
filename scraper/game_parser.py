@@ -94,5 +94,34 @@ class SteamGameParser:
         except ValueError:
             return None
 
+    # Rating Value
+    def get_rating_value(self):
+        rating = self.soup.select_one(
+            'meta[itemprop="ratingValue"]'
+        )
 
-        
+        if not rating:
+            return None
+
+        content = rating.get("content")
+
+        if not content:
+            return None
+
+        try:
+            return float(content)
+
+        except ValueError:
+            return None
+
+    # Review Summary
+    def get_review_summary(self):
+        review = self.soup.select_one(
+            "span.game_review_summary"
+        )
+
+        return (
+            review.get_text(strip=True)
+            if review
+            else None
+        )
