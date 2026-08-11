@@ -28,7 +28,7 @@ class SteamGameParser:
         )
 
     # Developer
-    def get_developer(self):
+    def get_developers(self):
         developers = []
 
         for row in self.soup.select("div.dev_row"):
@@ -51,26 +51,18 @@ class SteamGameParser:
     # Publisher
     def get_publishers(self):
 
-        
         publishers = []
 
-        for row in self.soup.select("div.dev_row a"):
+        for publisher in self.soup.select(
+            'a[href*="/publisher/"]'
+        ):
 
-            label = row.select_one(
-                "div.subtitle"
-            )
+            name = publisher.get_text(strip=True)
 
-            if not label:
-                continue
+            if name:
+                publishers.append(name)
 
-            if label.get_text(strip=True).startswith("Publisher"):
-                for publisher in row.select("a"):
-                    name = publisher.get_text(strip=True)
-
-                    if name:
-                        publishers.append(name)
-
-        return publishers
+        return list(dict.fromkeys(publishers))
 
 
     # Review Count
@@ -153,5 +145,33 @@ class SteamGameParser:
         # Remove duplicates while preserving order
         return list(dict.fromkeys(genres))
 
-    # Parse All Details
+    # Now, Parse All Details
+    def parse_game_details(self):
+        return {
+
+            "game_name":
+                self.get_game_name(),
+
+            "developers":
+                self.get_developers(),
+
+            "publishers":
+                self.get_publishers(),
+
+            "genres":
+                self.get_genres(),
+
+            "review_count":
+                self.get_review_count(),
+
+            "rating_value":
+                self.get_rating_value(),
+
+            "review_summary":
+                self.get_review_summary(),
+
+            "release_date":
+                self.get_release_date(),
+
+        }
     
