@@ -125,3 +125,33 @@ class SteamGameParser:
             if review
             else None
         )
+
+    # Release Date
+    def get_release_date(self):
+        release_date = self.soup.select_one(
+            "div.release_date div.date"
+        )
+
+        return (
+            release_date.get_text(strip=True)
+            if release_date
+            else None
+        )
+
+    # Genres
+    def get_genres(self):
+        genres = []
+
+        for genre in self.soup.select(
+            "div.details_block a[href*='/genre/']"
+        ):
+            name = genre.get_text(strip=True)
+
+            if name:
+                genres.append(name)
+
+        # Remove duplicates while preserving order
+        return list(dict.fromkeys(genres))
+
+    # Parse All Details
+    
