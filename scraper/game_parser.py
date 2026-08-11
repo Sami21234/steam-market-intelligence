@@ -48,4 +48,51 @@ class SteamGameParser:
 
         return developers
 
+    # Publisher
+    def get_publishers(self):
 
+        
+        publishers = []
+
+        for row in self.soup.select("div.dev_row a"):
+
+            label = row.select_one(
+                "div.subtitle"
+            )
+
+            if not label:
+                continue
+
+            if label.get_text(strip=True).startswith("Publisher"):
+                for publisher in row.select("a"):
+                    name = publisher.get_text(strip=True)
+
+                    if name:
+                        publishers.append(name)
+
+        return publishers
+
+
+    # Review Count
+    def get_review_count(self):
+
+        review_count = self.soup.select_one(
+            'meta[itemprop="reviewCount"]'
+        )
+
+        if not review_count:
+            return None
+
+        content = review_count.get("content")
+
+        if not content:
+            return None
+
+        try:
+            return int(content)
+
+        except ValueError:
+            return None
+
+
+        
