@@ -21,7 +21,7 @@ class SteamTransformer:
         )
 
         # price
-        price = game["price"]
+        price = game.get("price")
 
         if not price:
             transformed["price"] = None
@@ -53,13 +53,46 @@ class SteamTransformer:
         else:
             transformed["release_date"] = None
 
+        # Steam URL
+        transformed["steam_url"] = game.get("steam_url")
+
+        # Review Count
+        transformed["review_count"] = game.get("review_count")
+
+        # Rating Value
+        transformed["rating_value"] = game.get("rating_value")
+
+        # Developers
+        transformed["developers"] = game.get("developers", [])
+
+        # Publishers
+        transformed["publishers"] = game.get("publishers", [])
+
+        # Genres
+        transformed["genres"] = game.get("genres", [])
+
+        # Platform values
+        transformed["windows"] = game.get("windows", False)
+
+        transformed["mac"] = game.get("mac", False)
+
+        transformed["linux"] = game.get("linux", False)
+
+        # Return Game object
+
         return Game(        # Returning the transformed data as a Game object, which is a structured representation of the game data.
             steam_app_id = transformed["steam_app_id"],
             game_name = transformed["game_name"],
             release_date = transformed["release_date"],
+            steam_url = transformed["steam_url"],
             price = transformed["price"],
             review_summary = transformed["review_summary"],
+            review_count = transformed["review_count"],
+            rating_value = transformed["rating_value"],
             windows = transformed["windows"],
             mac = transformed["mac"],
             linux = transformed["linux"],
+            developers = transformed["developers"],
+            publishers = transformed["publishers"],
+            genres = transformed["genres"]
         )
