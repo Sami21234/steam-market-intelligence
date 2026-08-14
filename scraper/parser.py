@@ -30,6 +30,9 @@ class SteamParser:
         price = ( game.select_one("div.discount_final_price")     # Gives the price of the game.
                   or game.select_one("div.discount_original_price")
         )
+
+        steam_url = game.get("href")    # Gives the url of the game.
+
         review = game.select_one("span.search_review_summary")  # Gives the reviews of the game.
 
         platforms = game.select(".search_platforms span")       # Gives the platform such as (Linux, Windows, Mac).
@@ -48,6 +51,8 @@ class SteamParser:
             "price":
                 price.get_text(strip=True)
                 if price else None,
+
+            "steam_url": steam_url,
 
             "review_summary":
                 review.get(
