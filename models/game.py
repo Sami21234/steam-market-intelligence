@@ -7,20 +7,35 @@ from datetime import date
 @dataclass      # This decorator is used to automatically generate special methods like __init__(), __repr__(), and __eq__() for the class based on its attributes. It simplifies the creation of classes that primarily store data.
 class Game:
     """
-    Represents one Steam game.
+    Represents the complete data collected for one Steam game.
     """
+    # Basic game information
     steam_app_id: int       # The unique identifier for the game on Steam.
     game_name: str          # The name of the game.
     release_date: Optional[date]  # The date the game was released.
-    steam_url: str           # The URL of the game's page on Steam.
-    publisher: list[str]    # Publisher of the game.
-    developer: list[str]    # Developer of the game.
-    genres: list[str]       # List of genres.
+
+    # Steam information
+    steam_url: Optional[str]           # The URL of the game's page on Steam.
+
+    # Market information
     price: Optional[float]  # The price of the game.
+
+    # Review information
     review_summary: Optional[str]   # A summary of the game's reviews.
     review_count: Optional[int]     # Reviews of the Games.
-    positive_percent: Optional[float]   # percentage of the positive reviews.
-    windows: bool           # Indicates if the game is available on Windows.
-    mac: bool               # Indicates if the game is available on Mac.
-    linux: bool               # Indicates if the game is available on Linux.
+    rating_value: Optional[float]   
+
+    # platform information
+    windows: bool
+    mac: bool
+    linux: bool
+
+    # Relationships
+    publishers: list[str]    # Publisher of the game.
+    developers: list[str]    # Developer of the game.
+    genres: list[str]       # List of genres.
+
+    
+    # positive_percent: Optional[float]   # percentage of the positive reviews.
+    # platforms: list[str]           # List of platforms the game is available on.
 
