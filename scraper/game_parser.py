@@ -14,6 +14,16 @@ class SteamGameParser:
             "lxml"
         )
 
+    # Adding the validation method
+    def has_game_details(self):
+        """
+        Check whether the downloaded page actually contains
+        the expected Steam game-detail information or not.
+        """
+        return bool(
+            self.soup.select_one("div.apphub_AppName")
+        )
+
     # Game Title
     def get_game_name(self):
 
