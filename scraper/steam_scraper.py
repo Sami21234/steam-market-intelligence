@@ -47,7 +47,9 @@ class SteamScraper:
 
         metrics_repository = MetricsRepository(connection)
 
-        saved = 0       
+        saved = 0  
+        age_gated = 0
+        invalid_details = 0     
 
         try:   
             # Step 5 - Process Every Game. 
@@ -72,39 +74,79 @@ class SteamScraper:
                         steam_url
                     )
 
+                    # Check HTTP response
+
+                    if detail_response.status_code != 200:
+
+                        print(
+                            f"⚠️ Failed to download: "
+                            f"{parsed_game['game_name']} "
+                            f"(HTTP {detail_response.status_code})"
+                        )
+
+                        continue
+
                     # Step 7 - Parse Game Detail Page
                     detail_parser = SteamGameParser(
                         detail_response.text
                     )
 
-                    details = (
-                        detail_parser.parse_game_details()
+                    # Step 8 - check age-gated
+                    if detail_parser.is_age_gate():
+
+                        print(
+                            f"⚠️ Age-gated page: "
+                            f"{parsed_game['game_name']}"
+                        )
+
+                        age_gated += 1
+
+                        continue
+
+                    # Step 9 - Parse details
+                    details = detail_parser.parse_game_details()
+
+                    # Step 10 - Validate details
+                    if not details["developers"] and not details["publishers"] and not details["game_name"]:
+
+                        print(
+                            f"⚠️ No game/developer/publisher found: "
+                            f"{parsed_game['game_name']}"
+                        )
+
+                        invalid_details += 1
+
+                        print(
+                            f"Details returned: {details}"
+                        )
+
+                        continue
+
+
+                    # Step 11 - Merge Search + Deatail Data
+                    parsed_game.update(details
+                        # {
+                        #     "developers": details["developers"],
+
+                        #     "publishers": details["publishers"],
+
+                        #     "genres": details["genres"],
+
+                        #     "review_count": details["review_count"],
+
+                        #     "rating_value": details["rating_value"],
+
+                        # }
                     )
 
-                    # Step 8 - Merge Search + Deatail Data
-                    parsed_game.update(
-                        {
-                            "developers": details["developers"],
-
-                            "publishers": details["publishers"],
-
-                            "genres": details["genres"],
-
-                            "review_count": details["review_count"],
-
-                            "rating_value": details["rating_value"],
-
-                        }
-                    )
-
-                    # Step 9 - Transform
+                    # Step 12 - Transform
                     transformed_game = (
                         SteamTransformer.transform(
                             parsed_game
                         )
                     )
 
-                    # Step 10 - Print Result
+                    # Step 13 - Print Result
                     print(
                     f"\nProcessing: "
                     f"{transformed_game.game_name}"
@@ -149,6 +191,10 @@ class SteamScraper:
             connection.close()      # Close the database connection
 
         print(f"Successfully saved/processed {saved} games")
+        
+        print(f"Successfully processed: {saved}")
+        print(f"Age-gated pages: {age_gated}")
+        print(f"Invalid detail pages: {invalid_details}")
 
 # scrape_first_game() should now follow this order:
 
