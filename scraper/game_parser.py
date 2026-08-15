@@ -14,14 +14,37 @@ class SteamGameParser:
             "lxml"
         )
 
+
     # Adding the validation method
     def has_game_details(self):
         """
-        Check whether the downloaded page actually contains
-        the expected Steam game-detail information or not.
+        Check whether the page contains Steam game details.
+
+        We use multiple signals instead of depending on
+        one specific CSS selector.
         """
+
+        game_name = self.soup.select_one(
+            "div.apphub_AppName"
+        )
+
+        developers = self.soup.select(
+            "div.dev_row a"
+        )
+
+        genres = self.soup.select(
+            "div.glance_tags a"
+        )
+
+        review_summary = self.soup.select_one(
+            "span.nonresponsive_hidden"
+        )
+
         return bool(
-            self.soup.select_one("div.apphub_AppName")
+            game_name
+            or developers
+            or genres
+            or review_summary
         )
 
     # Game Title
@@ -184,4 +207,72 @@ class SteamGameParser:
                 self.get_release_date(),
 
         }
+
+    # debugging method
+    def debug_html(self):
+        print("\n===== DEBUG HTML =====")
+
+        print("Title:")
+        print(self.soup.title.get_text(strip=True) if self.soup.title else None)
+
+        print("\nApp Name:")
+        app_name = self.soup.select_one("div.apphub_AppName")
+        print(app_name.get_text(strip=True) if app_name else None)
+
+        print("\nDeveloper links:")
+        for element in self.soup.select("div.dev_row a"):
+            print(element.get_text(strip=True))
+
+        print("\nPublisher links:")
+        for element in self.soup.select("div.dev_row a"):
+            print(element.get_text(strip=True))
+
+        print("\nGenre links:")
+        for element in self.soup.select("div.glance_tags a"):
+            print(element.get_text(strip=True))
+
+    def debug_keywords(self):
+
+        html = self.soup.prettify()
+
+        keywords = [
+            "Developer",
+            "Developers",
+            "Publisher",
+            "Publishers",
+            "Genre",
+            "Genres",
+            "Review",
+            "Release Date",
+        ]
+
+        for keyword in keywords:
+
+            print(f"\n===== {keyword} =====")
+
+            index = html.lower().find(keyword.lower())
+
+            if index == -1:
+                print("NOT FOUND")
+                continue
+
+            start = max(0, index - 500)
+            end = min(len(html), index + 1000)
+
+            print(html[start:end])
+
+    def is_age_gate(self):
+        """
+        Check whether Steam returned an age-gate page
+        instead of the actual game details page.
+        """
+
+        return bool(
+            self.soup.select_one(".agegate_text_container")
+            or self.soup.select_one("#ageYear")
+            or self.soup.find(
+                string=lambda text:
+                text and "Please enter your birth date" in text
+            )
+        )
     
