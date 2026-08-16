@@ -1,8 +1,6 @@
 # This file is responsible for managing the data which changes over time(fact table data), this repository pouplates the fact table.
 
 from pymysql.connections import Connection
-from models.game import Game
-from datetime import date
 
 class MetricsRepository:
     """
@@ -14,7 +12,7 @@ class MetricsRepository:
     (
         game_id,
         price,
-        review_summary,
+        discount_percent,
         review_count,
         positive_percent,
         snapshot_date
@@ -30,7 +28,7 @@ class MetricsRepository:
     )
     ON DUPLICATE KEY UPDATE
         price = VALUES(price),
-        review_summary = VALUES(review_summary),
+        discount_percent = VALUES(discount_percent),
         review_count = VALUES(review_count),
         positive_percent = VALUES(positive_percent);
     """
@@ -41,18 +39,29 @@ class MetricsRepository:
     def save(
         self,
         game_id: int,
-        game: Game
+        snapshot_date,
+        review_count,
+        positive_percent,
+        price,
+        discount_percent=None
     ):
+        
+        """
+        Insert a game metric snapshot.
+        """
+
         with self.connection.cursor() as cursor:
             cursor.execute(
                 self.INSERT_METRICS_SQL,
                 (
                     game_id,
-                    game.price,
-                    game.review_summary,
-                    game.review_count,
-                    game.positive_percent,
-                    date.today()
+                    price,
+                    discount_percent,
+                    review_count,
+                    positive_percent,
+                    snapshot_date,
                 )
             )
+            lastrowid = cursor.lastrowid
         self.connection.commit()
+        return lastrowid
