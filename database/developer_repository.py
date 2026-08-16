@@ -20,7 +20,7 @@ class DeveloperRepository:
     )
     VALUES
     (
-        %S
+        %s
     );
     """
 
@@ -39,12 +39,25 @@ class DeveloperRepository:
             )
             return cursor.fetchone()
 
+    def create(self, developer_name: str) -> int:
+        """
+        Insert a new developer and return its developer_id.
+        """
+
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                self.INSERT_DEVELOPER_SQL,
+                (developer_name,)
+            )
+            self.connection.commit()
+            return cursor.lastrowid
+
     def get_or_create(self, developer_name: str) -> int:
         """
         Return an existing developer_id or create one.
         """
 
-        developer = self.get_by_name("developer_name")
+        developer = self.get_by_name(developer_name)
 
         if developer:
             return developer["developer_id"]
