@@ -19,11 +19,12 @@ class Game:
 
     # Market information
     price: Optional[float]  # The price of the game.
+    discount_percent: Optional[float]   # discount price for the game.
 
     # Review information
     review_summary: Optional[str]   # A summary of the game's reviews.
     review_count: Optional[int]     # Reviews of the Games.
-    rating_value: Optional[float]   
+    positive_percent: Optional[float]   # positive percentage of the review.
 
     # platform information
     windows: bool
@@ -34,8 +35,4 @@ class Game:
     publishers: list[str]    # Publisher of the game.
     developers: list[str]    # Developer of the game.
     genres: list[str]       # List of genres.
-
-    
-    # positive_percent: Optional[float]   # percentage of the positive reviews.
-    # platforms: list[str]           # List of platforms the game is available on.
 
