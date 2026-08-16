@@ -7,6 +7,19 @@ class BridgeRepository:
     relationships between dimension tables.
     """
 
+    INSERT_GAME_DEVELOPER_SQL = """
+    INSERT IGNORE INTO bridge_game_developers
+    (
+        game_id,
+        developer_id
+    )
+    VALUES
+    (
+        %s,
+        %s
+    );
+    """
+
     INSERT_GAME_PUBLISHER_SQL = """
     INSERT IGNORE INTO bridge_game_publishers
     (
@@ -25,19 +38,6 @@ class BridgeRepository:
     (
         game_id,
         genre_id
-    )
-    VALUES
-    (
-        %s,
-        %s
-    );
-    """
-
-    INSERT_GAME_DEVELOPER_SQL = """
-    INSERT IGNORE INTO bridge_game_developers
-    (
-        game_id,
-        developer_id
     )
     VALUES
     (
@@ -73,7 +73,7 @@ class BridgeRepository:
                     publisher_id,
                 )
             )
-            self.connection.commit()        # Commit the transaction to save the changes to the database.
+        self.connection.commit()        # Commit the transaction to save the changes to the database.
 
     # Function to link the relation between dim_game & developer.
     def link_game_developer(
@@ -81,7 +81,7 @@ class BridgeRepository:
             game_id: int,
             developer_id: int
     ):
-
+        # Connect a game with a developer.
         with self.connection.cursor() as cursor:
 
             cursor.execute(
@@ -91,7 +91,7 @@ class BridgeRepository:
                     developer_id,
                 )
             )
-            self.connection.commit()        # Commit the transaction to save the changes to the database.
+        self.connection.commit()        # Commit the transaction to save the changes to the database.
 
     # Function to link the relation between dim_game & genre.
     def link_game_genre(
@@ -109,7 +109,7 @@ class BridgeRepository:
                     genre_id,
                 )
             )
-            self.connection.commit()        # Commit the transaction to save the changes to the database.
+        self.connection.commit()        # Commit the transaction to save the changes to the database.
 
     # Function to link the relation between dim_game & platform.
     def link_game_platform(
