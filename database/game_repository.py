@@ -25,7 +25,8 @@ class GameRepository:
     )
     ON DUPLICATE KEY UPDATE
         game_name = VALUES(game_name),
-        release_date = VALUES(release_date);
+        release_date = VALUES(release_date),
+        steam_url = VALUES(steam_url);
     """
 
     GET_GAME_BY_APP_ID_SQL = """
@@ -67,7 +68,8 @@ class GameRepository:
                 self.GET_GAME_BY_APP_ID_SQL, 
                 (steam_app_id,),
             )
-            result = cursor.fetchone()      # fetchone() retrieves the first row of the result set from the executed query. If no rows are found, it returns None.
+            result =  cursor.fetchone()      # fetchone() retrieves the first row of the result set from the executed query. If no rows are found, it returns None.
+            return result
 
     def save_and_get_id(self, game: Game) -> int:     
         """
@@ -77,6 +79,11 @@ class GameRepository:
         """
         self.save(game)
         result =  self.get_by_steam_app_id(game.steam_app_id)
+
+        if not result:
+            raise RuntimeError(
+                f"Game not found after save: {game.steam_app_id}"
+            )
 
         return result["game_id"]
 
