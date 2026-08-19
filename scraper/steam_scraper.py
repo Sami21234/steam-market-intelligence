@@ -13,6 +13,7 @@ from database.genre_repository import GenreRepository       # Responsible for in
 from database.platform_repository import PlatformRepository     # Responsible for interacting with the dim_platforms table in the database.
 from database.bridge_repository import BridgeRepository     # Responsible for inserting relationships between dimension tables in the database.
 from database.metrics_repository import MetricsRepository       # Responsible for inserting records into the fact_game_metrics table in the database.
+from datetime import date
 
 class SteamScraper:
 
@@ -172,9 +173,85 @@ class SteamScraper:
                         f"{transformed_game.review_count}"
                     )
 
-                    # Database Loading
-                    # Not adding the repository operations yet.
-                    # First verifying that the complete data is correctly Collected.
+                    # Step 14 - Save Game Dimension
+                    game_id = game_repository.save_and_get_id(
+                        transformed_game
+                    )
+
+                    print(
+                        f"Game saved successfully. "
+                        f"game_id = {game_id}"
+                    )
+
+                    # Step 15 - Save Developers and create relationships
+                    for developer_name in transformed_game.developers:
+                        developer_id = developer_repository.get_or_create(
+                            developer_name
+                        )
+
+                        bridge_repository.link_game_developer(
+                            game_id,
+                            developer_id
+                        )
+
+                    # Step 16 - Save Publishers and create relationships
+                    for publisher_name in transformed_game.publishers:
+
+                        publisher_id = publisher_repository.get_or_create(
+                            publisher_name
+                        )
+
+                        bridge_repository.link_game_publisher(
+                            game_id,
+                            publisher_id
+                        )
+
+                    # Step 17 - Save Genres and create relationships
+                    for genre_name in transformed_game.genres:
+
+                        genre_id = genre_repository.get_or_create(
+                            genre_name
+                        )
+
+                        bridge_repository.link_game_genre(
+                            game_id,
+                            genre_id
+                        )
+
+                    # Step 18 - Save Platforms and create relationships
+
+                    platforms = []
+
+                    if transformed_game.windows:
+                        platforms.append("Windows")
+
+                    if transformed_game.mac:
+                        platforms.append("Mac")
+
+                    if transformed_game.linux:
+                        platforms.append("Linux")
+
+
+                    for platform_name in platforms:
+
+                        platform_id = platform_repository.get_or_create(
+                            platform_name
+                        )
+
+                        bridge_repository.link_game_platform(
+                            game_id,
+                            platform_id
+                        )
+
+                    # Step 19 - Save Game Metrics Snapshot
+
+                    metrics_repository.save(
+                        game_id=game_id,
+                        snapshot_date=date.today(),
+                        review_count=transformed_game.review_count,
+                        positive_percent=transformed_game.positive_percent,
+                        price=transformed_game.price,
+                    )
 
                     saved += 1
 
@@ -196,32 +273,23 @@ class SteamScraper:
         print(f"Age-gated pages: {age_gated}")
         print(f"Invalid detail pages: {invalid_details}")
 
-# scrape_first_game() should now follow this order:
 
 """
 
-            Create HTTP Client
-                    │
-              Download HTML
-                    │
-              Create Parser
-                    │
-             Find Game Cards
-                    │
-            Create MySQL Connection
-                    │
-            Create Repository
-                    │
-            Loop Through Games
-                    │
-                  Parse
-                    │
-                Validate
-                    │
-                Transform
-                    │
-               Save to Database
-                    │
-               Close Connection
+        Steam Search Page
+                ↓
+            Parse game
+                ↓
+            Download detail page
+                ↓
+            Parse details
+                ↓
+            Merge data
+                ↓
+            Transform
+                ↓
+            GameRepository
+                ↓
+            dim_games
 
 """
