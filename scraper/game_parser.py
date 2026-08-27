@@ -1,5 +1,6 @@
 # This file is responsible for parsing an individual Steam game detail page.
 
+import re
 from bs4 import BeautifulSoup       
 
 class SteamGameParser:
@@ -119,26 +120,6 @@ class SteamGameParser:
         except ValueError:
             return None
 
-    # Rating Value
-    def get_rating_value(self):
-        rating = self.soup.select_one(
-            'meta[itemprop="ratingValue"]'
-        )
-
-        if not rating:
-            return None
-
-        content = rating.get("content")
-
-        if not content:
-            return None
-
-        try:
-            return float(content)
-
-        except ValueError:
-            return None
-
     # Review Summary
     def get_review_summary(self):
         review = self.soup.select_one(
@@ -178,6 +159,50 @@ class SteamGameParser:
         # Remove duplicates while preserving order
         return list(dict.fromkeys(genres))
 
+    # Positive Review Percentage
+    def get_positive_percent(self):
+        review_percentage = self.soup.select_one(
+            "span.nonresponsive_hidden.responsive_reviewdesc"
+        )
+
+        if not review_percentage:
+            return None
+
+        text = review_percentage.get_text(" ", strip=True)
+
+        # Example:
+        # "- 86% of the 138 user reviews for this game are positive."
+
+        import re
+
+        match = re.search(r"(\d+(?:\.\d+)?)%", text)
+
+        if not match:
+            return None
+
+        return float(match.group(1))
+
+    # Discount Percentage
+    def get_discount_percent(self):
+
+        discount = self.soup.select_one(
+            "div.discount_pct"
+        )
+
+        if not discount:
+            return None
+
+        text = discount.get_text(strip=True)
+
+        # Example: "-50%"
+        text = text.replace("%", "").replace("-", "").strip()
+
+        try:
+            return float(text)
+
+        except ValueError:
+            return None
+
     # Now, Parse All Details
     def parse_game_details(self):
         return {
@@ -197,8 +222,8 @@ class SteamGameParser:
             "review_count":
                 self.get_review_count(),
 
-            "rating_value":
-                self.get_rating_value(),
+            "positive_percent":
+                self.get_positive_percent(),
 
             "review_summary":
                 self.get_review_summary(),
@@ -206,6 +231,8 @@ class SteamGameParser:
             "release_date":
                 self.get_release_date(),
 
+            "discount_percent":
+            self.get_discount_percent(),
         }
 
     # debugging method
