@@ -47,7 +47,7 @@ class MetricsRepository:
     ):
         
         """
-        Insert a game metric snapshot.
+        Insert or update a game metric snapshot.
         """
 
         with self.connection.cursor() as cursor:
