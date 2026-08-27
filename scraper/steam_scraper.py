@@ -173,6 +173,21 @@ class SteamScraper:
                         f"{transformed_game.review_count}"
                     )
 
+                    print(
+                        f"Positive Percent: "
+                        f"{transformed_game.positive_percent}"
+                    )
+
+                    print(
+                        f"Discount Percent: "
+                        f"{transformed_game.discount_percent}"
+                    )
+
+                    print(
+                        f"Price: "
+                        f"{transformed_game.price}"
+                    )
+
                     # Step 14 - Save Game Dimension
                     game_id = game_repository.save_and_get_id(
                         transformed_game
@@ -251,6 +266,7 @@ class SteamScraper:
                         review_count=transformed_game.review_count,
                         positive_percent=transformed_game.positive_percent,
                         price=transformed_game.price,
+                        discount_percent=transformed_game.discount_percent,
                     )
 
                     saved += 1
