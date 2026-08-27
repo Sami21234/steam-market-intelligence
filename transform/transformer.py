@@ -9,6 +9,25 @@ class SteamTransformer:
     """
 
     @staticmethod
+    def parse_release_date(value):
+        """
+        Convert Steam release date into a Python date object.
+
+        Example:
+            "21 Aug, 2012" -> date(2012, 8, 21)
+    """
+        if not value:
+            return None
+
+        try:
+            return datetime.strptime(
+                value.strip(),
+                "%d %b, %Y"
+            ).date()
+        except ValueError:
+            return None
+
+
     def transform(game: dict) -> dict:
 
         transformed = game.copy()       # Keeping the original record untouched and create a transformed version.
@@ -39,28 +58,20 @@ class SteamTransformer:
 
             transformed["price"] = float(price)
 
-        # Release Date
-        release_date = game.get("release_date")
-
-        if release_date:
-            try:
-                transformed["release_date"] = datetime.strptime(
-                    release_date,
-                    "%d %b, %Y"
-                ).date()
-            except ValueError:
-                transformed["release_date"] = None
-        else:
-            transformed["release_date"] = None
 
         # Steam URL
         transformed["steam_url"] = game.get("steam_url")
 
+        transformed["discount_percent"] = game.get("discount_percent")
+
         # Review Count
         transformed["review_count"] = game.get("review_count")
 
-        # Rating Value
-        transformed["rating_value"] = game.get("rating_value")
+        # positive_percent
+        transformed["positive_percent"] = game.get("positive_percent")
+
+        # discount_percent
+        transformed["discount_percent"] = game.get("discount_percent")
 
         # Developers
         transformed["developers"] = game.get("developers", [])
@@ -83,16 +94,20 @@ class SteamTransformer:
         return Game(        # Returning the transformed data as a Game object, which is a structured representation of the game data.
             steam_app_id = transformed["steam_app_id"],
             game_name = transformed["game_name"],
-            release_date = transformed["release_date"],
+            release_date = SteamTransformer.parse_release_date(transformed["release_date"]),
             steam_url = transformed["steam_url"],
+
             price = transformed["price"],
+            discount_percent = transformed["discount_percent"],
             review_summary = transformed["review_summary"],
             review_count = transformed["review_count"],
-            rating_value = transformed["rating_value"],
+            positive_percent = transformed["positive_percent"],
+
             windows = transformed["windows"],
             mac = transformed["mac"],
             linux = transformed["linux"],
-            developers = transformed["developers"],
+
             publishers = transformed["publishers"],
+            developers = transformed["developers"],
             genres = transformed["genres"]
         )
