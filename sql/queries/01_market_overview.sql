@@ -40,8 +40,8 @@ FROM fact_game_metrics;
 SELECT 
     COUNT(*) AS total_metric_records,
     ROUND(AVG(price), 2) AS average_price,
-    ROUND(AVG(positive_percent), 2) AS average_positive_percent
-    ROUND(AVG(review_count), 2) AS average_review_count,
+    ROUND(AVG(positive_percent), 2) AS average_positive_percent,
+    ROUND(AVG(review_count), 2) AS average_review_count
 FROM fact_game_metrics;
 
 -- 5. Free-to_play games
