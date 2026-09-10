@@ -13,9 +13,8 @@ Analysis uses the latest available snapshot for each game.
 */
 
 -- 1. Overall average positive review percentage
-SELECT * FROM steam_market_intelligence.fact_game_metrics;
 
-select 
+SELECT 
 	ROUND(AVG(positive_percent), 2) AS avg_positive_percent
 FROM fact_game_metrics
 WHERE snapshot_date = (
@@ -66,7 +65,7 @@ WHERE f.snapshot_date = (
     FROM fact_game_metrics
 )
 AND f.positive_percent IS NOT NULL
-ORDER BY positive_percent DESC LIMIT 20
+ORDER BY positive_percent DESC LIMIT 20;
 
 -- 4. Games with poor player reception
 SELECT
@@ -76,7 +75,7 @@ SELECT
     f.price,
     f.discount_percent
 FROM dim_games AS g
-JOIN fact_game_metrics AS m
+JOIN fact_game_metrics AS f
     ON g.game_id = f.game_id
 
 WHERE f.snapshot_date = (
