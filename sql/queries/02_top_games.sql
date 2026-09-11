@@ -69,7 +69,7 @@ WHERE f.snapshot_date = (
 )
 AND f.review_count >= 10000
 AND f.positive_percent >= 80
-ORDER BY f.review_count DESC, f.positive_percent DESC
+ORDER BY f.review_count DESC, f.positive_percent DESC;
 
 -- 4. Highly reviewed games with lower sentiment
 -- More than 10,000 reviews but below 70% positive
